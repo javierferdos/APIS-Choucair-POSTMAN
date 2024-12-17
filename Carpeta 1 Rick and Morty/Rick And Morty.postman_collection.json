@@ -1,0 +1,182 @@
+{
+	"info": {
+		"_postman_id": "2c94df41-1ef0-4d78-8199-c0580b2f849e",
+		"name": "Rick And Morty",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40367433"
+	},
+	"item": [
+		{
+			"name": "lista de personajes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"busqueda del personaje llamado 'Rick Sanchez'\", function() {\r",
+							"    var jsonData = pm.response.json(); // Parseamos la respuesta JSON\r",
+							"    var rick = jsonData.results.find(function(character) {\r",
+							"        return character.name === \"Rick Sanchez\"; // Buscamos a Rick Sanchez\r",
+							"    });\r",
+							"    \r",
+							"    pm.expect(rick).to.not.be.undefined; \r",
+							"\r",
+							"    \r",
+							"    pm.expect(rick.status).to.eql(\"Alive\");\r",
+							"    pm.expect(rick.species).to.eql(\"Human\");\r",
+							"    pm.expect(rick.gender).to.eql(\"Male\");\r",
+							"    pm.expect(rick.origin.name).to.eql(\"Earth (C-137)\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_base}}/character",
+					"host": [
+						"{{url_base}}"
+					],
+					"path": [
+						"character"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listado por paginacion",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"El personaje buscado no debería estar presente en esta página\", function() {\r",
+							"    var jsonData = pm.response.json(); // Parseamos la respuesta JSON\r",
+							"    pm.expect(jsonData.results).to.be.an('array');\r",
+							"    var personajeEncontrado = jsonData.results.find(function(character) {\r",
+							"        return character.name === \"Rick Sanchez\";\r",
+							"    });\r",
+							"\r",
+							"    pm.expect(personajeEncontrado).to.be.undefined;\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_base}}{{character}}/?page=10",
+					"host": [
+						"{{url_base}}{{character}}"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "multiples ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"La respuesta contiene un array vacío\", function() {\r",
+							"    var jsonData = pm.response.json(); \r",
+							"    pm.expect(jsonData).to.be.an('array');\r",
+							"    pm.expect(jsonData.length).to.eql(0);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_base}}{{character}}/7777,8888,9999",
+					"host": [
+						"{{url_base}}{{character}}"
+					],
+					"path": [
+						"7777,8888,9999"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busqueda ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verificar que el ID del perosnaje exista\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.eql(1);  \r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_base}}{{character}}/1",
+					"host": [
+						"{{url_base}}{{character}}"
+					],
+					"path": [
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,579 @@
+{
+	"info": {
+		"_postman_id": "6865f984-3abc-4f02-9d39-61958b3932a6",
+		"name": "BooksApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40367433"
+	},
+	"item": [
+		{
+			"name": "ObtenerLibros",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"body matches string\"), function (){\r",
+							"    pm.expect(pm.response.text()).to.include(\"Viscount Who Loved Me\");\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url_base}}{{libros}}",
+					"host": [
+						"{{Url_base}}{{libros}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener libro ID invalido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Código de estado es 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"El mensaje de error es descriptivo\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"error\");\r",
+							"    pm.expect(jsonData.error).to.include(\"No book with id\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url_base}}{{libros}}/576565",
+					"host": [
+						"{{Url_base}}{{libros}}"
+					],
+					"path": [
+						"576565"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener Libro ID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verificar que el ID del libro esté presente\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.id).to.eql(1);  \r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url_base}}{{libros}}/1",
+					"host": [
+						"{{Url_base}}{{libros}}"
+					],
+					"path": [
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registro de orden",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var response = pm.response.json();\r",
+							"var idlibro = response.orderId;\r",
+							"console.log(idlibro);\r",
+							"pm.environment.set(\"id_ultimo_libro\", idlibro)\r",
+							"// Test for status code\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"// Test for response body schema\r",
+							"pm.test(\"Response body has the correct schema\", function () {\r",
+							"    pm.expect(pm.response.json()).to.have.keys('created', 'orderId');\r",
+							"});\r",
+							"\r",
+							"// Test for response body properties\r",
+							"pm.test(\"Response body has 'created' property\", function () {\r",
+							"    pm.expect(pm.response.json()).to.have.property('created');\r",
+							"});\r",
+							"pm.test(\"Response body has 'orderId' property\", function () {\r",
+							"    pm.expect(pm.response.json()).to.have.property('orderId');\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\r\n  \"bookId\": 1,\r\n  \"customerName\": \"javier fer\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Url_base}}{{orders}}",
+					"host": [
+						"{{Url_base}}{{orders}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registro de orden NO valido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Validar código de estado\r",
+							"pm.test(\"Validar codigo diferente a no creado\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"// Validar el mensaje de error\r",
+							"pm.test(\"El mensaje de error es claro\", function () {\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"error\");\r",
+							"    pm.expect(jsonData.error).to.include(\"Invalid or missing bookId.\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"bookId\": 7,\r\n    \"customerName\": \"Juan Pérez\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Url_base}}{{orders}}",
+					"host": [
+						"{{Url_base}}{{orders}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"user\", pm.variables.replaceIn(\"user_{{$randomInt}}\"));\r",
+							"pm.environment.set(\"Email\",pm.variables.replaceIn(\"{{$randomEmail}}\"))\r",
+							"\r",
+							"var response=pm.response.json();\r",
+							"var tokenObtenido = response.accessToken;\r",
+							"\r",
+							"pm.environment.set(\"token\", tokenObtenido );\r",
+							"console.log(tokenObtenido)\r",
+							"\r",
+							"pm.test(\"Response status code is 201\", function () {\r",
+							"  pm.expect(pm.response.code).to.equal(201);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required field 'accessToken'\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.accessToken).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"AccessToken is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.accessToken).to.be.a('string').and.to.have.lengthOf.at.least(1, \"AccessToken should be a non-empty string\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content-Type header is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"clientName\": \"{{$randomUserName}}\",\r\n   \"clientEmail\": \"{{$randomEmail}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Url_base}}{{register}}",
+					"host": [
+						"{{Url_base}}{{register}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar orden",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"customerName\": \"javier prueba\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Url_base}}{{orders}}{{id_ultimo_libro}}",
+					"host": [
+						"{{Url_base}}{{orders}}{{id_ultimo_libro}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener orden ID",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url_base}}/orders/{{id_ultimo_libro}}",
+					"host": [
+						"{{Url_base}}"
+					],
+					"path": [
+						"orders",
+						"{{id_ultimo_libro}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Order",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{Url_base}}/orders/{{id_ultimo_libro}}",
+					"host": [
+						"{{Url_base}}"
+					],
+					"path": [
+						"orders",
+						"{{id_ultimo_libro}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Actualizar Orden NO valida",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"La respuesta debe tener un código de estado 404\", function() {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"customerName\": \"javier prueba\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Url_base}}{{orders}}{{id_ultimo_libro}}2",
+					"host": [
+						"{{Url_base}}{{orders}}{{id_ultimo_libro}}2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "paginacion",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Validar que se presente un personaje\"), function (){\r",
+							"    pm.expect(pm.response.text()).to.include(\"Viscount Who Loved Me\");\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url_base}}{{libros}}?page=1&limit=4",
+					"host": [
+						"{{Url_base}}{{libros}}"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "4"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Array Request vacio",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Validar que la respuesta sea un array vacío\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an('array').that.is.empty;\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url_base}}{{libros}}/1",
+					"host": [
+						"{{Url_base}}{{libros}}"
+					],
+					"path": [
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Registro user no valido",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"user\", pm.variables.replaceIn(\"user_{{$randomInt}}\"));\r",
+							"pm.environment.set(\"Email\",pm.variables.replaceIn(\"{{$randomEmail}}\"))\r",
+							"\r",
+							"pm.test(\"Response status code is 400\", function () {\r",
+							"  pm.expect(pm.response.code).to.equal(400);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content-Type header is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"clientName\": \"{{$randomUserName}}\",\r\n   \"clientEmail\": \"pruebaerror.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Url_base}}{{register}}",
+					"host": [
+						"{{Url_base}}{{register}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
